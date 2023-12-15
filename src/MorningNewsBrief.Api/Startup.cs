@@ -1,8 +1,8 @@
-﻿using Hellang.Middleware.ProblemDetails;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using AspNetCoreRateLimit;
+using Hellang.Middleware.ProblemDetails;
 using Microsoft.OpenApi.Models;
 using MorningNewsBrief.Api.Configuration;
+using System.Reflection;
 
 namespace MorningNewsBrief.Api {
     public class Startup {
@@ -29,7 +29,11 @@ namespace MorningNewsBrief.Api {
                             Email = "palaiologosstr@hotmail.com"
                         }
                     });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
             });
+            services.AddDistributedCacheConfig(Configuration);
             services.AddResponseCaching();
             services.AddProblemDetailsConfig(HostingEnvironment);
             //services.AddAuthenticationConfig(Settings);
@@ -48,6 +52,7 @@ namespace MorningNewsBrief.Api {
             app.UseProblemDetails();
             app.UseRouting();
             app.UseAuthorization();
+            app.UseIpRateLimiting();
             if (HostingEnvironment.IsDevelopment() || Settings.EnableSwagger) {
                 app.UseSwaggerUI(options => {
                     options.RoutePrefix = "docs";
@@ -57,11 +62,11 @@ namespace MorningNewsBrief.Api {
                     options.OAuthClientId("swagger-ui");
                     options.OAuthAppName("Swagger UI");
                 });
-                app.UseReDoc(options => {
-                    options.DocumentTitle = $"{Settings.ApplicationName} API Documentation";
-                    options.SpecUrl = "/swagger/v1/swagger.json";
-                });
             }
+            app.UseReDoc(options => {
+                options.DocumentTitle = $"{Settings.ApplicationName} API Documentation";
+                options.SpecUrl = "/swagger/v1/swagger.json";
+            });
             app.UseEndpoints(endpoints => {
                 endpoints.MapSwagger();
                 endpoints.MapControllers();
