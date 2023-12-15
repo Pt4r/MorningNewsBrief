@@ -1,0 +1,109 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\StratosPalaiologos\\source\\repos\\MorningNewsBrief\\MorningNewsBrief.Api.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\StratosPalaiologos\\source\\repos\\MorningNewsBrief\\MorningNewsBrief.Api.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\StratosPalaiologos\\source\\repos\\MorningNewsBrief\\MorningNewsBrief.Api.csproj",
+        "projectName": "MorningNewsBrief.Api",
+        "projectPath": "C:\\Users\\StratosPalaiologos\\source\\repos\\MorningNewsBrief\\MorningNewsBrief.Api.csproj",
+        "packagesPath": "C:\\Users\\StratosPalaiologos\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\StratosPalaiologos\\source\\repos\\MorningNewsBrief\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\StratosPalaiologos\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Users\\StratosPalaiologos\\source\\repos\\Indice.AspNet\\src\\Indice.AspNetCore.Identity\\bin\\Release\\netcoreapp3.1": {},
+          "C:\\Users\\StratosPalaiologos\\source\\repos\\Indice.AspNet\\src\\Indice.AspNetCore\\bin\\Release": {},
+          "C:\\Users\\StratosPalaiologos\\source\\repos\\Indice.AspNet\\src\\Indice.Common\\bin\\Release": {},
+          "C:\\Users\\StratosPalaiologos\\source\\repos\\Indice.AspNet\\src\\Indice.Services\\bin\\Release": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Hellang.Middleware.ProblemDetails": {
+              "target": "Package",
+              "version": "[6.5.1, )"
+            },
+            "Microsoft.ApplicationInsights.AspNetCore": {
+              "target": "Package",
+              "version": "[2.22.0, )"
+            },
+            "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[7.0.14, )"
+            },
+            "Microsoft.Extensions.ApiDescription.Server": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
+              "target": "Package",
+              "version": "[1.17.0, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            },
+            "Swashbuckle.AspNetCore.Annotations": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            },
+            "Swashbuckle.AspNetCore.ReDoc": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
