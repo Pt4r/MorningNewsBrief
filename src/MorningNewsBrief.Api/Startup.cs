@@ -1,8 +1,10 @@
 ﻿using AspNetCoreRateLimit;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.OpenApi.Models;
-using MorningNewsBrief.Api.Configuration;
+using MorningNewsBrief.Common.Data;
+using MorningNewsBrief.Common.Models;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 
 namespace MorningNewsBrief.Api {
     public class Startup {
@@ -33,8 +35,21 @@ namespace MorningNewsBrief.Api {
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 options.IncludeXmlComments(xmlPath);
             });
+            services.AddDbContext<MorningNewsBriefDbContext>(builder => {
+                var migrationsAssembly = typeof(Startup).Assembly.GetName().Name;
+                if (HostingEnvironment.IsDevelopment()) {
+                    builder.EnableDetailedErrors();
+                    builder.EnableSensitiveDataLogging();
+                }
+                builder.UseSqlServer(Configuration.GetConnectionString("MorningNewsBriefDb"), sqlServerOptions => {
+                    sqlServerOptions.MigrationsAssembly(migrationsAssembly);
+                    sqlServerOptions.EnableRetryOnFailure();
+                });
+            });
             services.AddDistributedCacheConfig(Configuration);
-            services.AddResponseCaching();
+            services.AddOutputCache(options => {
+                options.AddBasePolicy(x => x.With(xx => xx.HttpContext.Response.StatusCode > 200 && xx.HttpContext.Response.StatusCode < 300).NoCache());
+            });
             services.AddProblemDetailsConfig(HostingEnvironment);
             //services.AddAuthenticationConfig(Settings);
             //services.AddAuthorizationConfig();
@@ -48,7 +63,7 @@ namespace MorningNewsBrief.Api {
             }
             app.UseHttpsRedirection();
             app.UseHsts();
-            app.UseResponseCaching();
+            app.UseOutputCache();
             app.UseProblemDetails();
             app.UseRouting();
             app.UseAuthorization();

@@ -1,4 +1,4 @@
-﻿namespace MorningNewsBrief.Api.Configuration {
+﻿namespace MorningNewsBrief.Common.Models {
     public class GeneralSettings {
         /// <summary>
         /// The name is used to mark the section found inside a configuration file.
@@ -28,5 +28,14 @@
         /// A flag that indicates whether to register mock implementations of services in the DI.
         /// </summary>
         public bool MockServices { get; set; }
+        /// <summary>A list of endpoints used throughout the application.</summary>
+        public Dictionary<string, EndpointSettings> Endpoints { get; set; }
+    }
+
+    public class EndpointSettings {
+        /// <summary>They API endpoint address</summary>
+        public string Address { get; set; } = "https://xxx";
+        /// <summary>They API secret key.</summary>
+        public string ApiKey { get; set; } = "xxxxxxx";
     }
 }
