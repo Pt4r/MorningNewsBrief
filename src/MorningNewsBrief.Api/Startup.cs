@@ -1,10 +1,8 @@
 ﻿using AspNetCoreRateLimit;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.OpenApi.Models;
-using MorningNewsBrief.Common.Data;
 using MorningNewsBrief.Common.Models;
 using System.Reflection;
-using Microsoft.EntityFrameworkCore;
 
 namespace MorningNewsBrief.Api {
     public class Startup {
@@ -34,17 +32,6 @@ namespace MorningNewsBrief.Api {
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 options.IncludeXmlComments(xmlPath);
-            });
-            services.AddDbContext<MorningNewsBriefDbContext>(builder => {
-                var migrationsAssembly = typeof(Startup).Assembly.GetName().Name;
-                if (HostingEnvironment.IsDevelopment()) {
-                    builder.EnableDetailedErrors();
-                    builder.EnableSensitiveDataLogging();
-                }
-                builder.UseSqlServer(Configuration.GetConnectionString("MorningNewsBriefDb"), sqlServerOptions => {
-                    sqlServerOptions.MigrationsAssembly(migrationsAssembly);
-                    sqlServerOptions.EnableRetryOnFailure();
-                });
             });
             services.AddDistributedCacheConfig(Configuration);
             services.AddOutputCache(options => {

@@ -1,15 +1,12 @@
 ﻿using Indice.Types;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.Extensions.Caching.Distributed;
 using MorningNewsBrief.Common.Models;
 using MorningNewsBrief.Common.Models.Proxies.NewsApi.Filters;
 using MorningNewsBrief.Common.Services.Abstractions;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net.Mime;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
-using System.Text.Json;
-using Microsoft.Extensions.Caching.Distributed;
-using MorningNewsBrief.Common.Services;
 
 namespace MorningNewsBrief.Api.Controllers {
     /// <summary>

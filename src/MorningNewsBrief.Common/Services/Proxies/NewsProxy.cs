@@ -37,24 +37,25 @@ namespace MorningNewsBrief.Common.Services {
             var query = new StringBuilder();
 
             if (options != null) {
-                // The default country will be Greece unless changed by the country property.
                 if (options.Filter.Country.HasValue) {
                     query.Append($"country={options.Filter.Country.Value.ToString().ToLower()}");
-                } else {
-                    query.Append("country=gr");
-                }
+                } 
                 if (options.Filter.Category.HasValue) {
                     query.Append($"&category={options.Filter.Category.Value.ToString().ToLower()}");
                 }
                 if (options.Filter.Language.HasValue) {
                     query.Append($"&language={options.Filter.Language.Value.ToString().ToLower()}");
                 }
+            } else {
+                // The default country will be Greece unless changed by the country property.
+                query.Append("country=gr");
             }
             var uri = new Uri($"top-headlines?{query}", UriKind.Relative);
 
             //TODO: Check timeout and throw exception to get cached version
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, uri);
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _settings.Endpoints[API_NAME].ApiKey);
+            httpRequest.Headers.Add("User-Agent", "Morning News Brif App");
             var httpResponseMessage = await _httpClient.SendAsync(httpRequest);
             var httpResponseContent = await httpResponseMessage.Content.ReadAsStringAsync();
             if (!httpResponseMessage.IsSuccessStatusCode) {
