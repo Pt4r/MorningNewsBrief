@@ -37,20 +37,19 @@ namespace MorningNewsBrief.Common.Services {
         private async Task<News> ProcessGetNews(ListOptions<NewsFilter>? options = null) {
             var query = new StringBuilder();
 
-            if (options != null) {
-                if (options.Filter.Country.HasValue) {
-                    query.Append($"country={options.Filter.Country.Value.ToString().ToLower()}");
-                } 
-                if (options.Filter.Category.HasValue) {
-                    query.Append($"&category={options.Filter.Category.Value.ToString().ToLower()}");
-                }
-                if (options.Filter.Language.HasValue) {
-                    query.Append($"&language={options.Filter.Language.Value.ToString().ToLower()}");
-                }
+            if (options.Filter.Country.HasValue) {
+                query.Append($"country={options.Filter.Country.Value.ToShortForm()}");
             } else {
                 // The default country will be Greece unless changed by the country property.
                 query.Append("country=gr");
             }
+            if (options.Filter.Category.HasValue) {
+                query.Append($"&category={options.Filter.Category.Value.ToString().ToLower()}");
+            }
+            if (options.Filter.Language.HasValue) {
+                query.Append($"&language={options.Filter.Language.Value.ToShortForm()}");
+            }
+
             var uri = new Uri($"top-headlines?{query}", UriKind.Relative);
 
             //TODO: Check timeout and throw exception to get cached version
@@ -67,14 +66,17 @@ namespace MorningNewsBrief.Common.Services {
                 }
             }
 
-            var response = JsonSerializer.Deserialize<NewsResponse>(httpResponseContent, JsonSerializerOptionDefaults.GetDefaultSettings());
+            NewsResponse? response = null;
+            try {
+                response = JsonSerializer.Deserialize<NewsResponse>(httpResponseContent, JsonSerializerOptionDefaults.GetDefaultSettings());
+            } catch (Exception) {
+                _logger.LogCritical("Cannot deserialize news response.");
+            }
             if (response == null || response.Status != "ok" || response.TotalResults == 0) {
                 throw new HttpRequestException($"No results could be fetched with the query {query}", null, HttpStatusCode.InternalServerError);
             }
 
             return response.ToModel();
         }
-
-
     }
 }

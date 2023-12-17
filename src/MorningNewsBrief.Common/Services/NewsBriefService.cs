@@ -4,37 +4,45 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using MorningNewsBrief.Common.Models;
 using MorningNewsBrief.Common.Models.Proxies.NewsApi.Filters;
+using MorningNewsBrief.Common.Models.Proxies.WeatherApi.Filters;
 using MorningNewsBrief.Common.Services.Abstractions;
+using MorningNewsBrief.Common.Services.Proxies;
 using System.Text.Json;
 
 namespace MorningNewsBrief.Common.Services {
     public class NewsBriefService : INewsBriefFacade {
         private readonly ILogger<NewsBriefService> _logger;
         private readonly NewsProxy _newsApi;
+        private readonly WeatherProxy _weatherApi;
         private readonly IDistributedCache _cache;
 
-        public NewsBriefService(NewsProxy newsApi, ILogger<NewsBriefService> logger, IDistributedCache distributedCache) {
+        public NewsBriefService(NewsProxy newsProxy, WeatherProxy weatherProxy, ILogger<NewsBriefService> logger, IDistributedCache distributedCache) {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _newsApi = newsApi ?? throw new ArgumentNullException(nameof(newsApi));
+            _newsApi = newsProxy ?? throw new ArgumentNullException(nameof(newsProxy));
+            _weatherApi = weatherProxy ?? throw new ArgumentNullException(nameof(weatherProxy));
             _cache = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
         }
 
         public async Task<NewsBriefing> GetNewsBriefing(ListOptions<NewsBriefingFilter> options) {
             // Retieve api data
             var newsTask = _newsApi.GetNews(options.Filter.NewsListOptions);
+            var weatherTask = _weatherApi.GetCurrentWeather(options.Filter.WeatherListOptions);
 
-            Task.WhenAll(newsTask);
+            Task.WhenAll(newsTask, weatherTask);
 
             // Get the data or the cached version if there was an error.
             var news = await newsTask ?? await GetCached<News, NewsFilter>(options.Filter.NewsListOptions);
+            var weather = await weatherTask ?? await GetCached<Weather, WeatherFilter>(options.Filter.WeatherListOptions);
 
             // Aggregate the data
             var brief = new NewsBriefing() {
-                News = news
+                News = news,
+                Weather = weather
             };
 
             // Set the cached versions
             await SetCached(news, options.Filter.NewsListOptions);
+            await SetCached(weather, options.Filter.WeatherListOptions);
 
             return brief;
         }

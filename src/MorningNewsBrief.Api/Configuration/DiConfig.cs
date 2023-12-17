@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using MorningNewsBrief.Common.Configuration;
 using MorningNewsBrief.Common.Services;
 using MorningNewsBrief.Common.Services.Abstractions;
+using MorningNewsBrief.Common.Services.Proxies;
 
 namespace Microsoft.Extensions.DependencyInjection {
     public static class DiConfig {
@@ -14,8 +15,10 @@ namespace Microsoft.Extensions.DependencyInjection {
             #endregion
 
             services.AddTransient<INewsBriefFacade, NewsBriefService>();
+
             #region Api Services
             services.AddHttpClient<NewsProxy>();
+            services.AddHttpClient<WeatherProxy>();
             #endregion
 
             #region IP Rate Limiting
