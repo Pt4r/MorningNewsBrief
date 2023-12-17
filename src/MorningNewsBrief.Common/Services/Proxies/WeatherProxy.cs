@@ -65,7 +65,7 @@ namespace MorningNewsBrief.Common.Services.Proxies {
                 : response.ToModel();
         }
 
-        public async Task<LatLong> GetLatLonByName(string locationName) {
+        private async Task<LatLong> GetLatLonByName(string locationName) {
             var uri = new Uri($"geo/1.0/direct?appid={_apiKey}&limit=1&q={locationName}", UriKind.Relative);
             var httpResponseContent = await GetAsync(uri);
 
