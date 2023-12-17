@@ -35,6 +35,7 @@ namespace MorningNewsBrief.Api {
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 options.IncludeXmlComments(xmlPath);
+                options.EnableAnnotations();
             });
             services.AddDistributedCacheConfig(Configuration);
             services.AddOutputCache(options => {
