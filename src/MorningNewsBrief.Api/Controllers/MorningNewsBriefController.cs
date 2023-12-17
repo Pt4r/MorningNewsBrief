@@ -47,7 +47,7 @@ namespace MorningNewsBrief.Api.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(NewsBriefing))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
-        [OutputCache(Duration = 300, VaryByQueryKeys = new[] { "options" })]
+        [OutputCache(Duration = 300, VaryByQueryKeys = new[] { "*" })]
         public async Task<IActionResult> GetNewsBriefing([FromQuery] ListOptions<NewsBriefingFilter> options) {
             var briefing = await _newsBriefFacade.GetNewsBriefing(options);
             if (briefing == null) {

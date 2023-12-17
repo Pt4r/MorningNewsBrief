@@ -1,17 +1,14 @@
-﻿using Indice.Types;
+﻿using Indice.Serialization;
+using Indice.Types;
 using Microsoft.Extensions.Logging;
 using MorningNewsBrief.Common.Configuration;
-using MorningNewsBrief.Common.Models.Proxies.NewsApi.Filters;
 using MorningNewsBrief.Common.Models;
-using MorningNewsBrief.Common.Models.Proxies.WeatherApi.Filters;
-using Indice.Serialization;
-using MorningNewsBrief.Common.Models.Proxies.NewsApi;
-using System.Net.Http.Headers;
-using System.Net;
-using System.Text.Json;
-using System.Text;
-using System;
+using MorningNewsBrief.Common.Models.Proxies.NewsApi.Filters;
 using MorningNewsBrief.Common.Models.Proxies.WeatherApi;
+using MorningNewsBrief.Common.Models.Proxies.WeatherApi.Filters;
+using System.Net;
+using System.Text;
+using System.Text.Json;
 
 namespace MorningNewsBrief.Common.Services.Proxies {
     public class WeatherProxy {

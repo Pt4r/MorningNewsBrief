@@ -24,6 +24,8 @@ namespace MorningNewsBrief.Common.Services {
         }
 
         public async Task<NewsBriefing> GetNewsBriefing(ListOptions<NewsBriefingFilter> options) {
+            //TODO: Get Cached version first
+
             // Retieve api data
             var newsTask = _newsApi.GetNews(options.Filter.NewsListOptions);
             var weatherTask = _weatherApi.GetCurrentWeather(options.Filter.WeatherListOptions);

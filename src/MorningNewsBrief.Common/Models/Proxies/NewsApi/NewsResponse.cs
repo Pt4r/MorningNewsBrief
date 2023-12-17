@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using Indice.Types;
+using MorningNewsBrief.Common.Models.Proxies.NewsApi.Filters;
+using System.Text.Json.Serialization;
 
 namespace MorningNewsBrief.Common.Models.Proxies.NewsApi {
     public class NewsResponse {
@@ -18,7 +20,7 @@ namespace MorningNewsBrief.Common.Models.Proxies.NewsApi {
         public List<NewsArticleResponse>? Articles { get; set; } = null;
 
 
-        public News ToModel() =>
+        public News ToModel(ListOptions<NewsFilter> options) =>
             new() {
                 Articles = Articles?.Select(article =>
                                 new NewsArticles {
@@ -27,8 +29,7 @@ namespace MorningNewsBrief.Common.Models.Proxies.NewsApi {
                                     Title = article.Title,
                                     Url = article.Url,
                                     PublishedAt = article.PublishedAt
-                                }).ToList(),
-                LastUpdated = new DateTime()
+                                }).AsQueryable().ToResultSet(options)
             };
     }
 

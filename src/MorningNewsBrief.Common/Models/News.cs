@@ -1,11 +1,13 @@
-﻿namespace MorningNewsBrief.Common.Models {
+﻿using Indice.Types;
+
+namespace MorningNewsBrief.Common.Models {
     public class News {
         public News()
         {
             LastUpdated = DateTimeOffset.UtcNow;
         }
 
-        public IList<NewsArticles>? Articles { get; set; }
+        public ResultSet<NewsArticles>? Articles { get; set; }
         public DateTimeOffset? LastUpdated { get; set; }
     }
 

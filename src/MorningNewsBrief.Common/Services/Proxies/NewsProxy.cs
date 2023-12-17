@@ -76,7 +76,7 @@ namespace MorningNewsBrief.Common.Services {
                 throw new HttpRequestException($"No results could be fetched with the query {query}", null, HttpStatusCode.InternalServerError);
             }
 
-            return response.ToModel();
+            return response.ToModel(options);
         }
     }
 }
