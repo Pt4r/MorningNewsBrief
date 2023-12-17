@@ -3,8 +3,7 @@
     "http": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "docs",
-      //"launchUrl": "api-docs",
+      "launchUrl": "api-docs",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -14,8 +13,7 @@
     "https": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "docs",
-      //"launchUrl": "api-docs",
+      "launchUrl": "api-docs",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -25,8 +23,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "docs",
-      //"launchUrl": "api-docs",
+      "launchUrl": "api-docs",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -34,8 +31,7 @@
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/docs",
-      //"launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/api-docs",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/api-docs",
       "publishAllPorts": true,
       "useSSL": true
     }
