@@ -18,5 +18,11 @@ namespace MorningNewsBrief.Common.Models
             Description = "This is object containg all the daily news.",
             Format = "News")]
         public News? News { get; set; }
+
+        [SwaggerSchema(
+            Title = "Music Recommendations",
+            Description = "This is object containg all the music recommendations.",
+            Format = "MusicRecommendations")]
+        public MusicRecommendations? MusicRecommendations { get; set; }
     }
 }

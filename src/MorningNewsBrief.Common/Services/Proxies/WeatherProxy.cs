@@ -15,7 +15,7 @@ namespace MorningNewsBrief.Common.Services.Proxies {
         private readonly HttpClient _httpClient;
         private readonly ILogger<WeatherProxy> _logger;
         private readonly GeneralSettings _settings;
-        private readonly string _apiKey;
+        private readonly string _clientSecret;
 
         public string API_NAME = "Weather";
 
@@ -24,7 +24,7 @@ namespace MorningNewsBrief.Common.Services.Proxies {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _httpClient.BaseAddress = new Uri(_settings.Endpoints[API_NAME].Address.TrimEnd('/') + "/");
-            _apiKey = _settings.Endpoints[API_NAME].ApiKey;
+            _clientSecret = _settings.Endpoints[API_NAME].ClientSecret;
         }
 
         public async Task<Weather?> GetCurrentWeather(ListOptions<WeatherFilter>? options = null) {
@@ -32,6 +32,8 @@ namespace MorningNewsBrief.Common.Services.Proxies {
                 return await ProcessGetCurrentWeather(options);
             } catch (HttpRequestException ex) {
                 _logger.LogError($"There was an problem while retrieving {API_NAME} information. Error with status '{ex.StatusCode}' is '{ex.Message}'.");
+            } catch (Exception ex) {
+                _logger.LogError($"There was an problem while retrieving {API_NAME} information. Error is '{ex.Message}'.");
             }
             return default;
         }
@@ -51,7 +53,7 @@ namespace MorningNewsBrief.Common.Services.Proxies {
             query.Append($"&lon={options.Filter.Longitude}");
             query.Append($"&units=metric");
 
-            var uri = new Uri($"data/2.5/weather?appid={_apiKey}{query}", UriKind.Relative);
+            var uri = new Uri($"data/2.5/weather?appid={_clientSecret}{query}", UriKind.Relative);
             var httpResponseContent = await GetAsync(uri);
 
             // Get the response or throw an exception
@@ -62,12 +64,12 @@ namespace MorningNewsBrief.Common.Services.Proxies {
                 _logger.LogCritical("Cannot deserialize weather response.");
             }
             return response == null
-                ? throw new HttpRequestException($"No results could be fetched with the query {query}", null, HttpStatusCode.InternalServerError)
+                ? throw new Exception($"No results could be fetched with the query {query}")
                 : response.ToModel();
         }
 
         private async Task<LatLong> GetLatLonByName(string locationName) {
-            var uri = new Uri($"geo/1.0/direct?appid={_apiKey}&limit=1&q={locationName}", UriKind.Relative);
+            var uri = new Uri($"geo/1.0/direct?appid={_clientSecret}&limit=1&q={locationName}", UriKind.Relative);
             var httpResponseContent = await GetAsync(uri);
 
             WeatherLocationResponse? response = null;
@@ -77,7 +79,7 @@ namespace MorningNewsBrief.Common.Services.Proxies {
                 _logger.LogCritical("Cannot deserialize weather location response.");
             }
             return response == null
-                ? throw new HttpRequestException($"No results could be fetched.", null, HttpStatusCode.InternalServerError)
+                ? throw new Exception($"No results could be fetched.")
                 : new LatLong { Lat = response.Lat, Lon = response.Lon };
         }
 

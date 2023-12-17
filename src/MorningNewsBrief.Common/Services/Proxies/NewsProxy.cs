@@ -30,6 +30,8 @@ namespace MorningNewsBrief.Common.Services {
                 return await ProcessGetNews(options);
             } catch (HttpRequestException ex) {
                 _logger.LogError($"There was an problem while retrieving {API_NAME} information. Error with status '{ex.StatusCode}' is '{ex.Message}'.");
+            } catch (Exception ex) {
+                _logger.LogError($"There was an problem while retrieving {API_NAME} information. Error is '{ex.Message}'.");
             }
             return default;
         }
@@ -39,10 +41,8 @@ namespace MorningNewsBrief.Common.Services {
             var query = new StringBuilder();
 
             if (options.Filter.Country.HasValue) {
-                query.Append($"country={options.Filter.Country.Value.ToShortForm()}");
-            } else {
                 // The default country will be Greece unless changed by the country property.
-                query.Append("country=gr");
+                query.Append($"country={options.Filter.Country.Value.ToShortForm()}");
             }
             if (options.Filter.Category.HasValue) {
                 query.Append($"&category={options.Filter.Category.Value.ToString().ToLower()}");
@@ -61,7 +61,7 @@ namespace MorningNewsBrief.Common.Services {
 
             //TODO: Check api calls timeout and throw exception to get cached version
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, uri);
-            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _settings.Endpoints[API_NAME].ApiKey);
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _settings.Endpoints[API_NAME].ClientSecret);
             httpRequest.Headers.Add("User-Agent", "Morning News Brif App");
             var httpResponseMessage = await _httpClient.SendAsync(httpRequest);
             var httpResponseContent = await httpResponseMessage.Content.ReadAsStringAsync();
@@ -80,7 +80,7 @@ namespace MorningNewsBrief.Common.Services {
                 _logger.LogCritical("Cannot deserialize news response.");
             }
             return response == null || response.Status != "ok" || response.TotalResults == 0
-                ? throw new HttpRequestException($"No results could be fetched with the query {query}", null, HttpStatusCode.InternalServerError)
+                ? throw new Exception($"No results could be fetched with the query {query}")
                 : response.ToModel(options);
         }
     }

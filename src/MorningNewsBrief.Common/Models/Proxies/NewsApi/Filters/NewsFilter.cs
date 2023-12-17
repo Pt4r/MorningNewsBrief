@@ -3,7 +3,7 @@
 namespace MorningNewsBrief.Common.Models.Proxies.NewsApi.Filters {
     public class NewsFilter {
         public NewsCategories? Category { get; set; } = null;
-        public NewsCountry? Country { get; set; } = null;
+        public NewsCountry? Country { get; set; } = NewsCountry.Greece;
     }
 
     public enum NewsCategories {

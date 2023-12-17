@@ -36,6 +36,8 @@
         /// <summary>They API endpoint address</summary>
         public string Address { get; set; } = "https://xxx";
         /// <summary>They API secret key.</summary>
-        public string ApiKey { get; set; } = "xxxxxxx";
+        public string ClientId { get; set; } = "xxxxxxx";
+        /// <summary>They API secret key.</summary>
+        public string ClientSecret { get; set; } = "xxxxxxx";
     }
 }

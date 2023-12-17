@@ -19,6 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection {
             #region Api Services
             services.AddHttpClient<NewsProxy>();
             services.AddHttpClient<WeatherProxy>();
+            services.AddHttpClient<SpotifyProxy>();
             #endregion
 
             #region IP Rate Limiting

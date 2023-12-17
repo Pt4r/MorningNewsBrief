@@ -3,7 +3,7 @@
 namespace MorningNewsBrief.Common.Models.Proxies.WeatherApi {
     public class WeatherResponse {
         [JsonPropertyName("coord")]
-        public Coord Coord { get; set; }
+        public WeatherCoord Coord { get; set; }
 
         [JsonPropertyName("weather")]
         public List<WeatherModel> Weather { get; set; }
@@ -41,6 +41,78 @@ namespace MorningNewsBrief.Common.Models.Proxies.WeatherApi {
         [JsonPropertyName("cod")]
         public int Cod { get; set; }
 
+        public class WeatherClouds {
+            [JsonPropertyName("all")]
+            public int All { get; set; }
+        }
+
+        public class WeatherCoord {
+            [JsonPropertyName("lon")]
+            public double Lon { get; set; }
+
+            [JsonPropertyName("lat")]
+            public double Lat { get; set; }
+        }
+
+        public class WeatherMain {
+            [JsonPropertyName("temp")]
+            public double Temp { get; set; }
+
+            [JsonPropertyName("feels_like")]
+            public double FeelsLike { get; set; }
+
+            [JsonPropertyName("temp_min")]
+            public double TempMin { get; set; }
+
+            [JsonPropertyName("temp_max")]
+            public double TempMax { get; set; }
+
+            [JsonPropertyName("pressure")]
+            public int Pressure { get; set; }
+
+            [JsonPropertyName("humidity")]
+            public int Humidity { get; set; }
+        }
+
+        public class WeatherSys {
+            [JsonPropertyName("type")]
+            public int Type { get; set; }
+
+            [JsonPropertyName("id")]
+            public int Id { get; set; }
+
+            [JsonPropertyName("country")]
+            public string Country { get; set; }
+
+            [JsonPropertyName("sunrise")]
+            public int Sunrise { get; set; }
+
+            [JsonPropertyName("sunset")]
+            public int Sunset { get; set; }
+        }
+
+        public class WeatherModel {
+            [JsonPropertyName("id")]
+            public int Id { get; set; }
+
+            [JsonPropertyName("main")]
+            public string Main { get; set; }
+
+            [JsonPropertyName("description")]
+            public string Description { get; set; }
+
+            [JsonPropertyName("icon")]
+            public string Icon { get; set; }
+        }
+
+        public class WeatherWind {
+            [JsonPropertyName("speed")]
+            public double Speed { get; set; }
+
+            [JsonPropertyName("deg")]
+            public int Deg { get; set; }
+        }
+
         public Weather ToModel() =>
             new() {
                 Title = Weather[0].Main,
@@ -53,77 +125,5 @@ namespace MorningNewsBrief.Common.Models.Proxies.WeatherApi {
                 Pressure = Main.Pressure.ToString(),
                 Cloudiness = Clouds.All.ToString()
             };
-    }
-
-    public class WeatherClouds {
-        [JsonPropertyName("all")]
-        public int All { get; set; }
-    }
-
-    public class Coord {
-        [JsonPropertyName("lon")]
-        public double Lon { get; set; }
-
-        [JsonPropertyName("lat")]
-        public double Lat { get; set; }
-    }
-
-    public class WeatherMain {
-        [JsonPropertyName("temp")]
-        public double Temp { get; set; }
-
-        [JsonPropertyName("feels_like")]
-        public double FeelsLike { get; set; }
-
-        [JsonPropertyName("temp_min")]
-        public double TempMin { get; set; }
-
-        [JsonPropertyName("temp_max")]
-        public double TempMax { get; set; }
-
-        [JsonPropertyName("pressure")]
-        public int Pressure { get; set; }
-
-        [JsonPropertyName("humidity")]
-        public int Humidity { get; set; }
-    }
-
-    public class WeatherSys {
-        [JsonPropertyName("type")]
-        public int Type { get; set; }
-
-        [JsonPropertyName("id")]
-        public int Id { get; set; }
-
-        [JsonPropertyName("country")]
-        public string Country { get; set; }
-
-        [JsonPropertyName("sunrise")]
-        public int Sunrise { get; set; }
-
-        [JsonPropertyName("sunset")]
-        public int Sunset { get; set; }
-    }
-
-    public class WeatherModel {
-        [JsonPropertyName("id")]
-        public int Id { get; set; }
-
-        [JsonPropertyName("main")]
-        public string Main { get; set; }
-
-        [JsonPropertyName("description")]
-        public string Description { get; set; }
-
-        [JsonPropertyName("icon")]
-        public string Icon { get; set; }
-    }
-
-    public class WeatherWind {
-        [JsonPropertyName("speed")]
-        public double Speed { get; set; }
-
-        [JsonPropertyName("deg")]
-        public int Deg { get; set; }
     }
 }

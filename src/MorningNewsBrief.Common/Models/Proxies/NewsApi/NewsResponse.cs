@@ -19,11 +19,44 @@ namespace MorningNewsBrief.Common.Models.Proxies.NewsApi {
         [JsonPropertyName("articles")]
         public List<NewsArticleResponse>? Articles { get; set; } = null;
 
+        public class NewsSourceResponse {
+            [JsonPropertyName("id")]
+            public string Id { get; set; }
+
+            [JsonPropertyName("name")]
+            public string Name { get; set; }
+        }
+
+        public class NewsArticleResponse {
+            [JsonPropertyName("source")]
+            public NewsSourceResponse Source { get; set; }
+
+            [JsonPropertyName("author")]
+            public string Author { get; set; }
+
+            [JsonPropertyName("title")]
+            public string Title { get; set; }
+
+            [JsonPropertyName("description")]
+            public object Description { get; set; }
+
+            [JsonPropertyName("url")]
+            public string Url { get; set; }
+
+            [JsonPropertyName("urlToImage")]
+            public object UrlToImage { get; set; }
+
+            [JsonPropertyName("publishedAt")]
+            public DateTime PublishedAt { get; set; }
+
+            [JsonPropertyName("content")]
+            public object Content { get; set; }
+        }
 
         public News ToModel(ListOptions<NewsFilter> options) =>
             new() {
                 Articles = Articles?.Select(article =>
-                                new NewsArticles {
+                                new NewsArticle {
                                     SourceName = article.Source.Name,
                                     Author = article.Author,
                                     Title = article.Title,
@@ -32,39 +65,4 @@ namespace MorningNewsBrief.Common.Models.Proxies.NewsApi {
                                 }).AsQueryable().ToResultSet(options)
             };
     }
-
-    public class NewsSourceResponse {
-        [JsonPropertyName("id")]
-        public string Id { get; set; }
-
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
-    }
-
-    public class NewsArticleResponse {
-        [JsonPropertyName("source")]
-        public NewsSourceResponse Source { get; set; }
-
-        [JsonPropertyName("author")]
-        public string Author { get; set; }
-
-        [JsonPropertyName("title")]
-        public string Title { get; set; }
-
-        [JsonPropertyName("description")]
-        public object Description { get; set; }
-
-        [JsonPropertyName("url")]
-        public string Url { get; set; }
-
-        [JsonPropertyName("urlToImage")]
-        public object UrlToImage { get; set; }
-
-        [JsonPropertyName("publishedAt")]
-        public DateTime PublishedAt { get; set; }
-
-        [JsonPropertyName("content")]
-        public object Content { get; set; }
-    }
-
 }
