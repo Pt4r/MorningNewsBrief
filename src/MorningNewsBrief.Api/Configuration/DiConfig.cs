@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection {
             services.TryAddTransient(serviceProvider => serviceProvider.GetRequiredService<IOptions<GeneralSettings>>().Value);
             #endregion
 
-            services.AddTransient<INewsBriefFacade, NewsBriefService>();
+            services.AddTransient<INewsBriefService, NewsBriefService>();
 
             #region Api Services
             services.AddHttpClient<NewsProxy>();

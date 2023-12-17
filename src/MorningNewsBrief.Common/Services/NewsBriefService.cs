@@ -10,7 +10,7 @@ using MorningNewsBrief.Common.Services.Proxies;
 using System.Text.Json;
 
 namespace MorningNewsBrief.Common.Services {
-    public class NewsBriefService : INewsBriefFacade {
+    public class NewsBriefService : INewsBriefService {
         private readonly ILogger<NewsBriefService> _logger;
         private readonly NewsProxy _newsApi;
         private readonly WeatherProxy _weatherApi;
@@ -23,47 +23,77 @@ namespace MorningNewsBrief.Common.Services {
             _cache = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
         }
 
-        public async Task<NewsBriefing> GetNewsBriefing(ListOptions<NewsBriefingFilter> options) {
-            //TODO: Get Cached version first
+        public async Task<NewsBriefing> GetNewsBriefing(ListOptions<NewsBriefingFilter> options, CancellationToken cancellationToken) {
+            // Get the cached versions
+            var news = await GetCached<News, NewsFilter>(options.Filter.NewsListOptions, cancellationToken);
+            var weather = await GetCached<Weather, WeatherFilter>(options.Filter.WeatherListOptions, cancellationToken);
 
-            // Retieve api data
-            var newsTask = _newsApi.GetNews(options.Filter.NewsListOptions);
-            var weatherTask = _weatherApi.GetCurrentWeather(options.Filter.WeatherListOptions);
+            if (news != null && weather != null) {
+                // Aggregate the data
+                return new NewsBriefing() {
+                    News = news,
+                    Weather = weather
+                };
+            }
 
-            Task.WhenAll(newsTask, weatherTask);
+            // Get the actual data if the cached version is not found
+            List<Task> tasks = new();
+            var newsTask = news == null ? Task.Run(() => _newsApi.GetNews(options.Filter.NewsListOptions), cancellationToken) : default;
+            var weatherTask = weather == null ? Task.Run(() => _weatherApi.GetCurrentWeather(options.Filter.WeatherListOptions), cancellationToken) : default;
+            if (newsTask != null) {
+                tasks.Add(newsTask);
+            }
+            if (weatherTask != null) {
+                tasks.Add(weatherTask);
+            }
+
+            // Run all api calls in parallel
+            await Task.WhenAll(tasks);
 
             // Get the data or the cached version if there was an error.
-            var news = await newsTask ?? await GetCached<News, NewsFilter>(options.Filter.NewsListOptions);
-            var weather = await weatherTask ?? await GetCached<Weather, WeatherFilter>(options.Filter.WeatherListOptions);
+            news = newsTask != null 
+                ? await newsTask 
+                : await GetCached<News, NewsFilter>(options.Filter.NewsListOptions, cancellationToken);
+            weather = weatherTask != null
+                ? await weatherTask
+                : await GetCached<Weather, WeatherFilter>(options.Filter.WeatherListOptions, cancellationToken);
 
-            // Aggregate the data
-            var brief = new NewsBriefing() {
+            // Set the cached versions
+            await SetCached(news, options.Filter.NewsListOptions, 5, cancellationToken);
+            await SetCached(weather, options.Filter.WeatherListOptions, cancellationToken: cancellationToken);
+
+            return new NewsBriefing() {
                 News = news,
                 Weather = weather
             };
-
-            // Set the cached versions
-            await SetCached(news, options.Filter.NewsListOptions);
-            await SetCached(weather, options.Filter.WeatherListOptions);
-
-            return brief;
         }
 
-        public async Task<T?> GetCached<T, TFilter>(ListOptions<TFilter>? options) where TFilter : class, new() {
+        private async Task<T?> GetCached<T, TFilter>(ListOptions<TFilter>? options, CancellationToken cancellationToken = default) where TFilter : class, new() {
             T? response = default;
-            var cachedNews = await _cache.GetStringAsync($"{nameof(T)}_{options}");
+            var optionsString = string.Empty;
+            if (options != null) {
+                var optionsDict = options?.ToDictionary();
+                optionsString = string.Join("_", optionsDict?.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value));
+            }
+            var cachedNews = await _cache.GetStringAsync($"{nameof(T)}_{optionsString}", cancellationToken);
             if (cachedNews != null) {
                 response = JsonSerializer.Deserialize<T>(cachedNews, JsonSerializerOptionDefaults.GetDefaultSettings());
             }
             return response;
         }
 
-        public async Task SetCached<T, TFilter>(T? news, ListOptions<TFilter>? options) where T : class where TFilter : class, new() {
+        private async Task SetCached<T, TFilter>(T? news, ListOptions<TFilter>? options, double duration = 15, CancellationToken cancellationToken = default) where T : class where TFilter : class, new() {
             if (news != null) {
+                var optionsString = string.Empty;
+                if (options != null) {
+                    var optionsDict = options?.ToDictionary();
+                    optionsString = string.Join("_", optionsDict?.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value));
+                }
                 var cacheOptions = new DistributedCacheEntryOptions();
-                cacheOptions.SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
+                // Cache for 15 minutes
+                cacheOptions.SetAbsoluteExpiration(TimeSpan.FromMinutes(duration));
                 var serializedNews = JsonSerializer.Serialize(news, JsonSerializerOptionDefaults.GetDefaultSettings());
-                await _cache.SetStringAsync($"{nameof(T)}_{options}", serializedNews, cacheOptions);
+                await _cache.SetStringAsync($"{nameof(T)}_{optionsString}", serializedNews, cacheOptions, cancellationToken);
             }
         }
     }

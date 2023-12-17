@@ -37,11 +37,14 @@ namespace MorningNewsBrief.Common.Services.Proxies {
         }
 
         private async Task<Weather> ProcessGetCurrentWeather(ListOptions<WeatherFilter>? options = null) {
+            // If the location is not Athens, Greece then we need to get the lat/lon coordinates
             if (options?.Filter.Location != "Athens, Greece") {
                 var latLong = await GetLatLonByName(options.Filter.Location);
                 options.Filter.Latitude = latLong.Lat.ToString();
                 options.Filter.Longitude = latLong.Lon.ToString();
             }
+
+            // Build the query string
             var query = new StringBuilder();
             query.Append($"&lang={options.Filter.Language.ToShortForm()}");
             query.Append($"&lat={options.Filter.Latitude}");
@@ -51,6 +54,7 @@ namespace MorningNewsBrief.Common.Services.Proxies {
             var uri = new Uri($"data/2.5/weather?appid={_apiKey}{query}", UriKind.Relative);
             var httpResponseContent = await GetAsync(uri);
 
+            // Get the response or throw an exception
             WeatherResponse? response = null;
             try {
                 response = JsonSerializer.Deserialize<WeatherResponse>(httpResponseContent, JsonSerializerOptionDefaults.GetDefaultSettings());
@@ -78,6 +82,7 @@ namespace MorningNewsBrief.Common.Services.Proxies {
         }
 
         private async Task<string> GetAsync(Uri uri) {
+            //TODO: Check api calls timeout and throw exception to get cached version
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, uri);
             httpRequest.Headers.Add("User-Agent", "Morning News Brif App");
             var httpResponseMessage = await _httpClient.SendAsync(httpRequest);

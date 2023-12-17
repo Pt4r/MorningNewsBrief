@@ -25,7 +25,7 @@ namespace MorningNewsBrief.Common.Services {
             _httpClient.BaseAddress = new Uri(_settings.Endpoints[API_NAME].Address.TrimEnd('/') + "/");
         }
 
-        public async Task<News?> GetNews(ListOptions<NewsFilter>? options = null) {
+        public async Task<News?> GetNews(ListOptions<NewsFilter> options) {
             try {
                 return await ProcessGetNews(options);
             } catch (HttpRequestException ex) {
@@ -34,7 +34,8 @@ namespace MorningNewsBrief.Common.Services {
             return default;
         }
 
-        private async Task<News> ProcessGetNews(ListOptions<NewsFilter>? options = null) {
+        private async Task<News> ProcessGetNews(ListOptions<NewsFilter> options) {
+            // Build the query string
             var query = new StringBuilder();
 
             if (options.Filter.Country.HasValue) {
@@ -46,13 +47,19 @@ namespace MorningNewsBrief.Common.Services {
             if (options.Filter.Category.HasValue) {
                 query.Append($"&category={options.Filter.Category.Value.ToString().ToLower()}");
             }
-            if (options.Filter.Language.HasValue) {
-                query.Append($"&language={options.Filter.Language.Value.ToShortForm()}");
+            if (options.Size.HasValue) {
+                query.Append($"&pageSize={options.Size.Value}");
+            }
+            if (options.Page.HasValue) {
+                query.Append($"&page={options.Page.Value}");
+            }
+            if (!string.IsNullOrEmpty(options.Search)) {
+                query.Append($"&q={options.Search}");
             }
 
             var uri = new Uri($"top-headlines?{query}", UriKind.Relative);
 
-            //TODO: Check timeout and throw exception to get cached version
+            //TODO: Check api calls timeout and throw exception to get cached version
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, uri);
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _settings.Endpoints[API_NAME].ApiKey);
             httpRequest.Headers.Add("User-Agent", "Morning News Brif App");
@@ -72,11 +79,9 @@ namespace MorningNewsBrief.Common.Services {
             } catch (Exception) {
                 _logger.LogCritical("Cannot deserialize news response.");
             }
-            if (response == null || response.Status != "ok" || response.TotalResults == 0) {
-                throw new HttpRequestException($"No results could be fetched with the query {query}", null, HttpStatusCode.InternalServerError);
-            }
-
-            return response.ToModel(options);
+            return response == null || response.Status != "ok" || response.TotalResults == 0
+                ? throw new HttpRequestException($"No results could be fetched with the query {query}", null, HttpStatusCode.InternalServerError)
+                : response.ToModel(options);
         }
     }
 }

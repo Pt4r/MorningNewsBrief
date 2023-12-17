@@ -23,10 +23,10 @@ namespace MorningNewsBrief.Api.Controllers {
     public class MorningNewsBriefController : ControllerBase {
 
         private readonly ILogger<MorningNewsBriefController> _logger;
-        private readonly INewsBriefFacade _newsBriefFacade;
+        private readonly INewsBriefService _newsBriefFacade;
         private readonly IDistributedCache _cache;
 
-        public MorningNewsBriefController(ILogger<MorningNewsBriefController> logger, INewsBriefFacade newsBriefFacade, IDistributedCache cache) {
+        public MorningNewsBriefController(ILogger<MorningNewsBriefController> logger, INewsBriefService newsBriefFacade, IDistributedCache cache) {
             _logger = logger;
             _newsBriefFacade = newsBriefFacade ?? throw new ArgumentNullException(nameof(newsBriefFacade));
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
@@ -36,6 +36,7 @@ namespace MorningNewsBrief.Api.Controllers {
         /// Get the morning news briefing
         /// </summary>
         /// <param name="options"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>The mornign news briefing object</returns>
         [HttpGet()]
         [SwaggerOperation(
@@ -47,9 +48,10 @@ namespace MorningNewsBrief.Api.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(NewsBriefing))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status502BadGateway, Type = typeof(ProblemDetails))]
+        //TODO: Create a new policy for VaryByQueryKeys ListOptions<NewsBriefingFilter> options
         [OutputCache(Duration = 300, VaryByQueryKeys = new[] { "*" })]
-        public async Task<IActionResult> GetNewsBriefing([FromQuery] ListOptions<NewsBriefingFilter> options) {
-            var briefing = await _newsBriefFacade.GetNewsBriefing(options);
+        public async Task<IActionResult> GetNewsBriefing([FromQuery] ListOptions<NewsBriefingFilter> options, CancellationToken cancellationToken) {
+            var briefing = await _newsBriefFacade.GetNewsBriefing(options, cancellationToken);
             if (briefing == null) {
                 return NotFound();
             }
