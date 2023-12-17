@@ -1,9 +1,11 @@
-﻿using Indice.Types;
+﻿using Indice.Serialization;
+using Indice.Types;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.Caching.Distributed;
 using MorningNewsBrief.Common.Models;
 using MorningNewsBrief.Common.Models.Proxies.NewsApi.Filters;
+using MorningNewsBrief.Common.Services;
 using MorningNewsBrief.Common.Services.Abstractions;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net.Mime;
@@ -20,11 +22,11 @@ namespace MorningNewsBrief.Api.Controllers {
     [ProducesErrorResponseType(typeof(ProblemDetails))]
     public class MorningNewsBriefController : ControllerBase {
 
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ILogger<MorningNewsBriefController> _logger;
         private readonly INewsBriefFacade _newsBriefFacade;
         private readonly IDistributedCache _cache;
 
-        public MorningNewsBriefController(ILogger<WeatherForecastController> logger, INewsBriefFacade newsBriefFacade, IDistributedCache cache) {
+        public MorningNewsBriefController(ILogger<MorningNewsBriefController> logger, INewsBriefFacade newsBriefFacade, IDistributedCache cache) {
             _logger = logger;
             _newsBriefFacade = newsBriefFacade ?? throw new ArgumentNullException(nameof(newsBriefFacade));
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));

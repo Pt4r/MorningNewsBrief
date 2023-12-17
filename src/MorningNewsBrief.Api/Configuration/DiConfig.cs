@@ -1,7 +1,7 @@
 ﻿using AspNetCoreRateLimit;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using MorningNewsBrief.Common.Models;
+using MorningNewsBrief.Common.Configuration;
 using MorningNewsBrief.Common.Services;
 using MorningNewsBrief.Common.Services.Abstractions;
 

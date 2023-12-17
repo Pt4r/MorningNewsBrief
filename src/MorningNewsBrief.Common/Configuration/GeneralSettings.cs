@@ -1,4 +1,4 @@
-﻿namespace MorningNewsBrief.Common.Models {
+﻿namespace MorningNewsBrief.Common.Configuration {
     public class GeneralSettings {
         /// <summary>
         /// The name is used to mark the section found inside a configuration file.

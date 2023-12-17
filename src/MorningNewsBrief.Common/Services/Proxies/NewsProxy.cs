@@ -1,6 +1,7 @@
 ﻿using Indice.Serialization;
 using Indice.Types;
 using Microsoft.Extensions.Logging;
+using MorningNewsBrief.Common.Configuration;
 using MorningNewsBrief.Common.Models;
 using MorningNewsBrief.Common.Models.Proxies.NewsApi;
 using MorningNewsBrief.Common.Models.Proxies.NewsApi.Filters;
@@ -15,7 +16,7 @@ namespace MorningNewsBrief.Common.Services {
         private readonly ILogger<NewsBriefService> _logger;
         private readonly GeneralSettings _settings;
 
-        public const string API_NAME = "News";
+        public string API_NAME = "News";
 
         public NewsProxy(HttpClient httpClient, ILogger<NewsBriefService> logger, GeneralSettings settings) {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

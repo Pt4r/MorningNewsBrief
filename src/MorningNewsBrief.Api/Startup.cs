@@ -1,8 +1,9 @@
 ﻿using AspNetCoreRateLimit;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.OpenApi.Models;
-using MorningNewsBrief.Common.Models;
+using MorningNewsBrief.Common.Configuration;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace MorningNewsBrief.Api {
     public class Startup {
@@ -17,7 +18,9 @@ namespace MorningNewsBrief.Api {
         public GeneralSettings Settings { get; }
 
         public void ConfigureServices(IServiceCollection services) {
-            services.AddControllers();
+            services.AddControllers()
+                    .AddJsonOptions(options =>
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
             services.AddSwaggerGen(options => {
                 options.SwaggerDoc("v1",
                     new OpenApiInfo {

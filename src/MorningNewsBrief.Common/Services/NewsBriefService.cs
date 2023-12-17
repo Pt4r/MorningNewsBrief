@@ -20,30 +20,41 @@ namespace MorningNewsBrief.Common.Services {
         }
 
         public async Task<NewsBriefing> GetNewsBriefing(ListOptions<NewsBriefingFilter> options) {
+            // Retieve api data
             var newsTask = _newsApi.GetNews(options.Filter.NewsListOptions);
 
             Task.WhenAll(newsTask);
-            var news = await newsTask;
 
-            if (news == null) {
-                // If not found, try to get the cached version.
-                var cachedNews = await _cache.GetAsync($"{NewsProxy.API_NAME}_{options}");
-                if (cachedNews != null) {
-                    news = JsonSerializer.Deserialize<News>(cachedNews, JsonSerializerOptionDefaults.GetDefaultSettings());
-                }
-            }
-           
-            _logger.LogInformation("loaded");
-            var brief = new NewsBriefing() { 
+            // Get the data or the cached version if there was an error.
+            var news = await newsTask ?? await GetCached<News, NewsFilter>(options.Filter.NewsListOptions);
+
+            // Aggregate the data
+            var brief = new NewsBriefing() {
                 News = news
             };
 
-            var cacheOptions = new DistributedCacheEntryOptions();
-            cacheOptions.SetAbsoluteExpiration(TimeSpan.FromHours(1));
-            var serializedNews = JsonSerializer.Serialize(news, JsonSerializerOptionDefaults.GetDefaultSettings());
-            await _cache.SetStringAsync($"{NewsProxy.API_NAME}_{options}", serializedNews, cacheOptions);
+            // Set the cached versions
+            await SetCached(news, options.Filter.NewsListOptions);
 
             return brief;
+        }
+
+        public async Task<T?> GetCached<T, TFilter>(ListOptions<TFilter>? options) where TFilter : class, new() {
+            T? response = default;
+            var cachedNews = await _cache.GetStringAsync($"{nameof(T)}_{options}");
+            if (cachedNews != null) {
+                response = JsonSerializer.Deserialize<T>(cachedNews, JsonSerializerOptionDefaults.GetDefaultSettings());
+            }
+            return response;
+        }
+
+        public async Task SetCached<T, TFilter>(T? news, ListOptions<TFilter>? options) where T : class where TFilter : class, new() {
+            if (news != null) {
+                var cacheOptions = new DistributedCacheEntryOptions();
+                cacheOptions.SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
+                var serializedNews = JsonSerializer.Serialize(news, JsonSerializerOptionDefaults.GetDefaultSettings());
+                await _cache.SetStringAsync($"{nameof(T)}_{options}", serializedNews, cacheOptions);
+            }
         }
     }
 }
