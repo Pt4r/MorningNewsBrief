@@ -37,8 +37,7 @@ namespace MorningNewsBrief.Api.Controllers {
         [SwaggerOperation(
             Summary = "Get the morning news briefing",
             Description = "This endpoint will return the available news briefing or the cached version if its not found.",
-            OperationId = "GetNewsBrief",
-            Tags = new[] { "Briefing" })]
+            OperationId = "GetNewsBrief")]
         [SwaggerResponse(200, "The posted order payload", type: typeof(NewsBriefing))]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(NewsBriefing))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
